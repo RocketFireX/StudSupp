@@ -2,198 +2,1151 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>STUDSUP</title>
+  <title>StudSup! - Dashboard</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
-    body { background: #222; color: #fff; height: 100vh; overflow: hidden; }
-    .app { display: flex; height: 100vh; width: 100vw; }
-
-    /* SIDEBAR */
-    .sidebar {
-      width: 220px;
-      background: #b30000;
-      padding: 15px;
+    /* GLOBAL */
+    body {
+      margin: 0;
+      background: #2a0001;
+      font-family: 'Press Start 2P', monospace;
+      color: white;
       display: flex;
-      flex-direction: column;
     }
-    .sidebar-title { font-size: 26px; font-weight: 900; margin-bottom: 20px; text-shadow: 1px 1px 0 #000; }
-    .sidebar-button {
-      background: #111; color: #fff; border-radius: 6px;
-      padding: 10px 12px; margin-bottom: 8px;
-      font-size: 13px; font-weight: 700; cursor: pointer;
-      border: 2px solid #000; transition: 0.15s;
-    }
-    .sidebar-button:hover { background: #222; transform: translateY(-1px); }
-    .sidebar-button.active { outline: 2px solid #fff; }
-    .sidebar-button.blue { background: #007bff; }
-    .sidebar-button.small-text { font-size: 11px; }
-    .sidebar-button .subtext { font-size: 10px; display: block; margin-top: 4px; }
-
-    /* MAIN */
-    .main { flex: 1; display: flex; flex-direction: column; background: #333; }
 
     /* TOP BAR */
     .topbar {
-      height: 60px; background: #111;
-      display: flex; align-items: center; justify-content: flex-end;
-      padding: 0 20px; gap: 20px; border-bottom: 3px solid #000;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      background: #ff2b2b;
+      display: flex;
+      align-items: center;
+      padding: 0 30px;
+      box-sizing: border-box;
+      z-index: 1000;
     }
-    .top-username { color: #00a2ff; font-weight: 700; font-size: 13px; }
-    .top-tickets {
-      background: #fff; color: #000; padding: 6px 10px;
-      border-radius: 4px; font-size: 12px; font-weight: 700;
-      border: 2px solid #000;
+
+    .logo {
+      font-size: 28px;
+      color: white;
+      margin-right: 40px;
     }
-    .top-settings { color: #00a2ff; font-weight: 700; font-size: 13px; cursor: pointer; }
 
-    /* CONTENT */
-    .content-wrapper { flex: 1; display: flex; background: #555; border-top: 3px solid #000; }
-    .content { flex: 1; padding: 20px; background: #777; overflow-y: auto; }
-    .content-section { display: none; }
-    .content-section.active { display: block; }
-    .content-header { font-size: 20px; font-weight: 900; margin-bottom: 15px; text-shadow: 1px 1px 0 #000; }
-    .sub-header { font-size: 16px; font-weight: 700; margin: 10px 0 8px; text-shadow: 1px 1px 0 #000; }
+    .searchbar {
+      width: 500px;
+      padding: 14px;
+      border: none;
+      background: #000;
+      color: white;
+      font-size: 12px;
+      outline: none;
+    }
 
-    /* GAMES */
-    .games-grid {
+    /* SETTINGS ICON + PANEL */
+    .settings-icon {
+      font-size: 26px;
+      margin-left: 15px;
+      cursor: pointer;
+      user-select: none;
+      color: white;
+      transition: transform 0.25s ease;
+    }
+
+    .settings-icon:hover {
+      transform: rotate(25deg);
+    }
+
+    .settings-panel {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      width: 260px;
+      background: #000;
+      border: 3px solid #ff2b2b;
+      padding: 15px;
+      box-sizing: border-box;
+      display: none;
+      z-index: 1200;
+    }
+
+    .settings-panel.open {
+      display: block;
+    }
+
+    .settings-panel h2 {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .settings-panel button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 8px;
+      background: #ff2b2b;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-family: 'Press Start 2P';
+      font-size: 10px;
+    }
+
+    /* NOTIFICATION BELL */
+    .notif-bell {
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      margin-left: 20px;
+      image-rendering: pixelated;
+    }
+
+    .notif-count {
+      background: yellow;
+      color: black;
+      font-size: 12px;
+      padding: 3px 6px;
+      border-radius: 50%;
+      position: relative;
+      left: -10px;
+      top: -10px;
+      display: none;
+    }
+
+    /* TICKETS */
+    .tickets-box {
+      display: flex;
+      align-items: center;
+      margin-left: auto;
+      margin-right: 10px;
+    }
+
+    .tickets-icon {
+      width: 123px;
+      height: auto;
+      image-rendering: pixelated;
+      margin-right: 10px;
+    }
+
+    #ticketAmount {
+      font-size: 18px;
+      color: black;
+    }
+
+    /* USERNAME + VERIFIED */
+    .username-display {
+      margin-left: 20px;
+      font-size: 20px;
+      color: purple;
+    }
+
+    #verifiedBadge {
+      width: 40px;
+      height: 40px;
+      margin-left: 8px;
+      display: none;
+      vertical-align: middle;
+      image-rendering: pixelated;
+      position: relative;
+      top: -2px;
+    }
+
+    /* MAIN CONTENT */
+    .main {
+      margin-top: 100px;
+      margin-left: 40px;
+      width: calc(100% - 260px - 60px);
+    }
+
+    .game-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      grid-auto-rows: 90px;
-      gap: 15px;
+      gap: 25px;
+      margin-top: 20px;
     }
-    .game-card {
-      background: #ff8c00; border-radius: 18px; border: 3px solid #000;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 900; font-size: 13px; color: #b30000;
-      text-shadow: 1px 1px 0 #000; cursor: pointer;
-      transition: 0.1s;
-    }
-    .game-card:hover { transform: translateY(-2px); box-shadow: 0 3px 0 #000; }
 
-    /* FRIENDS */
-    .friends {
-      width: 180px; background: #000; padding: 20px 10px;
-      display: flex; flex-direction: column; align-items: center;
-      gap: 15px; border-left: 3px solid #000;
+    .game-tile {
+      text-align: center;
+      cursor: pointer;
     }
-    .friend-avatar {
-      width: 110px; height: 40px; background: #fff;
-      border-radius: 999px; display: flex; align-items: center;
-      justify-content: center; color: #000; font-size: 11px;
-      font-weight: 700; border: 2px solid #000; cursor: pointer;
+
+    .thumb {
+      width: 100%;
+      height: 160px;
+      background: white;
+      border-radius: 12px;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .game-title {
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    /* RIGHT SIDEBAR */
+    .sidebar {
+      position: fixed;
+      right: 0;
+      top: 80px;
+      width: 260px;
+      height: calc(100% - 80px);
+      background: #000;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+
+    .groupchat-btn {
+      width: 100%;
+      padding: 14px;
+      background: #ff2b2b;
+      border: none;
+      color: white;
+      font-size: 12px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    /* FRIEND ROWS */
+    .friend-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #111;
+      border-radius: 8px;
+      padding: 6px 8px;
+      margin-bottom: 8px;
+      font-size: 11px;
+    }
+
+    .friend-main {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .friend-status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .friend-name-label {
+      max-width: 120px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .friend-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .friend-btn {
+      border: none;
+      font-family: 'Press Start 2P';
+      font-size: 8px;
+      padding: 3px 4px;
+      cursor: pointer;
+    }
+
+    .friend-btn-accept {
+      background: #2ecc71;
+      color: #000;
+    }
+
+    .friend-btn-deny {
+      background: #e74c3c;
+      color: #fff;
+    }
+
+    /* SHOP PANEL */
+    .shop-panel {
+      position: fixed;
+      top: 0;
+      right: -350px;
+      width: 350px;
+      height: 100%;
+      background: #111;
+      padding: 20px;
+      box-sizing: border-box;
+      transition: right 0.3s ease;
+      z-index: 1100;
+      border-left: 4px solid #ff2b2b;
+    }
+
+    .shop-panel.open {
+      right: 0;
+    }
+
+    .shop-panel h2 {
+      color: white;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .shop-panel button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #ff2b2b;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-family: 'Press Start 2P';
+      font-size: 10px;
+    }
+
+    .shop-toggle {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      background: #ff2b2b;
+      padding: 15px 20px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-family: 'Press Start 2P';
+      z-index: 1200;
+      font-size: 10px;
+    }
+
+    /* MESSAGES BOX */
+    #messagesBox {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 320px;
+      height: 250px;
+      background: rgba(0, 0, 0, 0.9);
+      border: 3px solid #ff2b2b;
+      padding: 10px;
+      overflow-y: auto;
+      font-family: 'Press Start 2P';
+      font-size: 10px;
+      color: #00ff00;
+      box-sizing: border-box;
+      display: none;
+      z-index: 1150;
+    }
+
+    #messagesList {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      height: 150px;
+      overflow-y: auto;
+    }
+
+    #messageInput {
+      flex: 1;
+      padding: 5px;
+      font-family: 'Press Start 2P';
+      font-size: 10px;
+    }
+
+    #sendMessageBtn {
+      padding: 5px 10px;
+      background: #ff2b2b;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-family: 'Press Start 2P';
+      font-size: 10px;
+    }
+
+    /* NOTIFICATION PANEL */
+    #notifPanel {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 350px;
+      height: 100%;
+      background: #111;
+      border-left: 3px solid #3b82f6;
+      padding: 20px;
+      transition: right 0.3s ease;
+      font-family: 'Press Start 2P', monospace;
+      color: white;
+      z-index: 9999;
+    }
+
+    #notifPanel.open {
+      right: 0;
+    }
+
+    #notifList {
+      margin-top: 20px;
+      font-size: 12px;
+      line-height: 20px;
+    }
+
+    /* TERMINAL */
+    #terminal {
+      position: fixed;
+      bottom: 280px;
+      left: 20px;
+      width: 300px;
+      padding: 10px;
+      font-family: 'Press Start 2P';
+      font-size: 10px;
+      box-sizing: border-box;
+      z-index: 1150;
     }
   </style>
 </head>
 <body>
 
-<div class="app">
+<div id="notifPanel">
+  <h2>Notifications</h2>
+  <div id="notifList"></div>
+  <button onclick="clearNotifs()">Clear All</button>
+  <button onclick="closeNotifPanel()">Close</button>
+</div>
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <div class="sidebar-title">STUDSUP</div>
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">StudSup</div>
 
-    <div class="sidebar-button active" data-screen="home">CLASSICS (HOME)</div>
-    <div class="sidebar-button" data-screen="shop">SHOP</div>
-    <div class="sidebar-button" data-screen="messages">MESSAGES</div>
-    <div class="sidebar-button" data-screen="buy-scripts">BUY SCRIPTS!</div>
-    <div class="sidebar-button" data-screen="client-exploits">CLIENT SIDED EXPLOITS</div>
-    <div class="sidebar-button" data-screen="server-executors">SERVER SIDED EXECUTORS</div>
+  <input class="searchbar" placeholder="SEARCH HERE, GAMES, PEOPLE, ETC">
 
-    <div class="sidebar-button small-text" data-screen="apply-admin">
-      APPLY FOR ADMIN
-      <span class="subtext">YOU WOT GET PAID :C<br>BECAUSE I BROKE TOO</span>
-    </div>
-
-    <div class="sidebar-button blue" data-screen="buy-tickets">BUY TICKETS [TY:}]</div>
+  <div class="tickets-box">
+    <img src="Tickets.png" class="tickets-icon" alt="Tickets">
+    <span id="ticketAmount">0</span>
   </div>
 
-  <!-- MAIN -->
-  <div class="main">
+  <div id="usernameDisplay" class="username-display"></div>
+  <img id="verifiedBadge" src="verified.png" alt="Verified">
 
-    <!-- TOP BAR -->
-    <div class="topbar">
-      <div class="top-username">USERNAME{BADGEPNG}{PREMIUMBADGE.PNG}</div>
-      <div class="top-tickets">TICKETS PNG 100</div>
-      <div class="top-settings" data-screen="settings">SETTINGS UNICOFE</div>
+  <img src="bell.png" id="notifBell" class="notif-bell" alt="Notifications">
+  <div id="notifCount" class="notif-count">0</div>
+
+  <div class="settings-icon" onclick="toggleSettingsPanel()">⚙</div>
+</div>
+
+<!-- SETTINGS PANEL -->
+<div id="settingsPanel" class="settings-panel">
+  <h2>Settings</h2>
+  <button onclick="joinDiscord()">Join Our Discord</button>
+  <button onclick="submitApplication()">Submit Your Application</button>
+  <button onclick="linkDiscord()">Link Discord Account</button>
+  <p id="codeStatus" style="font-size:10px; margin-top:8px;"></p>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+  <div class="game-grid">
+    <div class="game-tile" onclick="openGame('game1.html')">
+      <div class="thumb" style="background-image:url('game1.png');"></div>
+      <div class="game-title">Survive The Disasters!</div>
     </div>
 
-    <!-- CONTENT -->
-    <div class="content-wrapper">
-      <div class="content">
+    <div class="game-tile" onclick="openGame('game2.html')">
+      <div class="thumb" style="background-image:url('game2.png');"></div>
+      <div class="game-title">Game 2</div>
+    </div>
 
-        <!-- HOME -->
-        <div class="content-section active" id="screen-home">
-          <div class="content-header">Classic's!</div>
+    <div class="game-tile" onclick="openGame('game3.html')">
+      <div class="thumb" style="background-image:url('game3.png');"></div>
+      <div class="game-title">Game 3</div>
+    </div>
 
-          <div class="sub-header">Continue Games</div>
-          <div class="games-grid" id="continue-games"></div>
+    <div class="game-tile" onclick="openGame('game4.html')">
+      <div class="thumb" style="background-image:url('game4.png');"></div>
+      <div class="game-title">Game 4</div>
+    </div>
 
-          <div class="sub-header">Recommended Games</div>
-          <div class="games-grid" id="recommended-games"></div>
+    <div class="game-tile" onclick="openGame('game5.html')">
+      <div class="thumb" style="background-image:url('game5.png');"></div>
+      <div class="game-title">Game 5</div>
+    </div>
 
-          <div class="sub-header">All Classics</div>
-          <div class="games-grid" id="all-games"></div>
-        </div>
+    <div class="game-tile" onclick="openGame('game6.html')">
+      <div class="thumb" style="background-image:url('game6.png');"></div>
+      <div class="game-title">Game 6</div>
+    </div>
 
-        <!-- OTHER SCREENS -->
-        <div class="content-section" id="screen-shop"><div class="content-header">Shop</div></div>
-        <div class="content-section" id="screen-messages"><div class="content-header">Messages</div></div>
-        <div class="content-section" id="screen-buy-scripts"><div class="content-header">Buy Scripts</div></div>
-        <div class="content-section" id="screen-client-exploits"><div class="content-header">Client Exploits</div></div>
-        <div class="content-section" id="screen-server-executors"><div class="content-header">Server Executors</div></div>
-        <div class="content-section" id="screen-apply-admin"><div class="content-header">Apply for Admin</div></div>
-        <div class="content-section" id="screen-buy-tickets"><div class="content-header">Buy Tickets</div></div>
-        <div class="content-section" id="screen-settings"><div class="content-header">Settings</div></div>
+    <div class="game-tile" onclick="openGame('game7.html')">
+      <div class="thumb" style="background-image:url('game7.png');"></div>
+      <div class="game-title">Game 7</div>
+    </div>
 
-      </div>
-
-      <!-- FRIENDS -->
-      <div class="friends">
-        <div class="friend-avatar">friend avata</div>
-        <div class="friend-avatar">friend avata</div>
-        <div class="friend-avatar">friend avata</div>
-        <div class="friend-avatar">friend avata</div>
-      </div>
-
+    <div class="game-tile" onclick="openGame('game8.html')">
+      <div class="thumb" style="background-image:url('game8.png');"></div>
+      <div class="game-title">Game 8</div>
     </div>
   </div>
 </div>
 
-<script>
-/* SPA ROUTING */
-document.querySelectorAll('.sidebar-button, .top-settings').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const screen = btn.dataset.screen;
-    if (!screen) return;
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <button class="groupchat-btn">+ Create Group Chat</button>
+  <button class="groupchat-btn" onclick="openAddFriend()">+ Add Friend</button>
 
-    document.querySelectorAll('.content-section').forEach(sec =>
-      sec.classList.remove('active')
-    );
-    document.querySelector('#screen-' + screen).classList.add('active');
+  <h3 style="color:white; font-size:12px;">Friend Requests</h3>
+  <div id="friendRequests"></div>
 
-    document.querySelectorAll('.sidebar-button').forEach(b =>
-      b.classList.remove('active')
-    );
-    if (btn.classList.contains('sidebar-button')) btn.classList.add('active');
-  });
+  <h3 style="color:white; margin-top:20px; font-size:12px;">Friends (Online)</h3>
+  <div id="onlineFriends"></div>
+
+  <h3 style="color:white; margin-top:20px; font-size:12px;">Friends (Offline)</h3>
+  <div id="offlineFriends"></div>
+
+  <h3 style="color:white; margin-top:20px; font-size:12px;">Recommended</h3>
+  <div id="recommendedList"></div>
+</div>
+
+<!-- SHOP PANEL -->
+<div id="shopPanel" class="shop-panel">
+  <h2>StudSup Shop</h2>
+  <button onclick="buyItem(50)">Buy Item (50 Tickets)</button>
+  <button onclick="buyMultiplier(2, 100)">Multiplier x2 (100 Tickets)</button>
+  <button onclick="buyMultiplier(5, 300)">Multiplier x5 (300 Tickets)</button>
+  <button onclick="buyMultiplier(15, 1000)">Multiplier x15 (1000 Tickets)</button>
+</div>
+
+<button class="shop-toggle" onclick="toggleShop()">SHOP</button>
+
+<!-- MESSAGE SYSTEM -->
+<div id="messagesBox">
+  <div style="color: #ff2b2b; font-weight: bold; margin-bottom: 8px;">Messages:</div>
+  <div id="messagesList"></div>
+  <div style="margin-top: 10px; display: flex; gap: 5px;">
+    <input id="messageInput" placeholder="Type message...">
+    <button id="sendMessageBtn">Send</button>
+  </div>
+</div>
+
+<!-- TERMINAL -->
+<input id="terminal" placeholder="Enter command...">
+
+<!-- BACKGROUND MUSIC -->
+<audio id="bgMusic" loop>
+  <source src="studsup_music.mp3" type="audio/mpeg">
+</audio>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD9-BQnJc1iqKiDD3jgfbRFVCXTTYH--hA",
+  authDomain: "ssauth-d8368.firebaseapp.com",
+  projectId: "ssauth-d8368",
+  storageBucket: "ssauth-d8368.firebasestorage.app",
+  messagingSenderId: "662748350969",
+  appId: "1:662748350969:web:b23b9c3b82e008fba39528",
+  measurementId: "G-KJVMS678ZF"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+
+    // DO NOT USE EMAIL AS USERNAME
+    // Load the username saved during signup
+    const username = localStorage.getItem("StudSupCurrentUser");
+
+    const el = document.getElementById("usernameDisplay");
+    if (el) el.textContent = username || "User";
+
+    initAll();
+  } else {
+    window.location.href = "login.html";
+  }
 });
 
-/* GAME GENERATOR */
-function generateGames(containerId, count) {
-  const container = document.getElementById(containerId);
-  for (let i = 1; i <= count; i++) {
-    const card = document.createElement('div');
-    card.className = 'game-card';
-    card.textContent = `game${i}.png`;
-    card.onclick = () => window.location.href = `game${i}.html`;
-    container.appendChild(card);
+window.logout = function () {
+  signOut(auth).then(() => {
+    localStorage.removeItem("StudSupCurrentUser");
+    window.location.href = "login.html";
+  });
+};
+</script>
+<!-- MAIN DASHBOARD LOGIC -->
+<script>
+const CURRENT_USER_KEY = "StudSupCurrentUser";
+const OWNER_NAME = "StudSupCurrentUser"; // literal owner name
+let ticketsPaused = false;
+
+/* ========== BASIC HELPERS ========== */
+function getCurrentUser() {
+  return localStorage.getItem(CURRENT_USER_KEY) || null;
+}
+
+function getTickets(user) {
+  const key = `Tickets_${user}`;
+  const val = parseInt(localStorage.getItem(key));
+  return isNaN(val) ? 0 : val;
+}
+
+function setTickets(user, amount) {
+  const key = `Tickets_${user}`;
+  localStorage.setItem(key, String(amount));
+  if (user === getCurrentUser()) updateTicketDisplay();
+}
+
+/* ========== INIT ========== */
+function initAll() {
+  initUserHeader();
+  initTickets();
+  initSearch();
+  loadFriendRequests();
+  loadFriends();
+  loadRecommended();
+  updateNotifDisplay();
+  hookUI();
+}
+
+/* ========== SETTINGS PANEL ========== */
+function toggleSettingsPanel() {
+  document.getElementById("settingsPanel").classList.toggle("open");
+}
+
+function joinDiscord() {
+  window.open("https://discord.gg/eDdJJbkYJy", "_blank");
+}
+
+function submitApplication() {
+  alert("Application system coming soon!");
+}
+
+function linkDiscord() {
+  document.getElementById("codeStatus").innerText = "Linking system coming soon!";
+}
+
+function openGame(file) {
+  window.location.href = file;
+}
+
+/* ========== USER HEADER + VERIFIED ========== */
+function initUserHeader() {
+  const currentUser = getCurrentUser();
+  const nameEl = document.getElementById("usernameDisplay");
+  const badge = document.getElementById("verifiedBadge");
+
+  if (!currentUser) {
+    nameEl.textContent = "No User";
+    badge.style.display = "none";
+    return;
+  }
+
+  nameEl.textContent = currentUser;
+
+  const verifiedKey = `Verified_${currentUser}`;
+  const isVerified = localStorage.getItem(verifiedKey) === "true";
+  badge.style.display = isVerified ? "inline-block" : "none";
+}
+
+/* ========== TICKETS ========== */
+function initTickets() {
+  const user = getCurrentUser();
+  if (!user) return;
+  if (!localStorage.getItem(`Tickets_${user}`)) {
+    setTickets(user, 0);
+  }
+  updateTicketDisplay();
+}
+
+function updateTicketDisplay() {
+  const user = getCurrentUser();
+  if (!user) return;
+  const amount = getTickets(user);
+  const el = document.getElementById("ticketAmount");
+  if (el) el.textContent = amount;
+}
+
+/* ========== NOTIFICATIONS ========== */
+function updateNotifDisplay() {
+  const currentUser = getCurrentUser();
+  if (!currentUser) return;
+
+  const notifKey = `Notifications_${currentUser}`;
+  const notifList = JSON.parse(localStorage.getItem(notifKey) || "[]");
+
+  const count = document.getElementById("notifCount");
+  if (!count) return;
+
+  if (notifList.length > 0) {
+    count.textContent = notifList.length;
+    count.style.display = "inline-block";
+  } else {
+    count.style.display = "none";
   }
 }
 
-generateGames('continue-games', 4);
-generateGames('recommended-games', 4);
-generateGames('all-games', 20); // change to however many you want
+function openNotifPanel() {
+  const currentUser = getCurrentUser();
+  if (!currentUser) return;
+
+  const panel = document.getElementById("notifPanel");
+  const listEl = document.getElementById("notifList");
+  const notifKey = `Notifications_${currentUser}`;
+  const notifList = JSON.parse(localStorage.getItem(notifKey) || "[]");
+
+  listEl.innerHTML = "";
+
+  if (notifList.length === 0) {
+    listEl.innerHTML = `<div style="font-size:10px; color:#aaa;">No notifications.</div>`;
+  } else {
+    notifList.forEach(n => {
+      const div = document.createElement("div");
+      div.textContent = `[${new Date(n.time).toLocaleTimeString()}] ${n.type} from ${n.from}`;
+      listEl.appendChild(div);
+    });
+  }
+
+  panel.classList.add("open");
+}
+
+function closeNotifPanel() {
+  document.getElementById("notifPanel").classList.remove("open");
+}
+
+function clearNotifs() {
+  const currentUser = getCurrentUser();
+  if (!currentUser) return;
+
+  const notifKey = `Notifications_${currentUser}`;
+  localStorage.setItem(notifKey, JSON.stringify([]));
+  updateNotifDisplay();
+  document.getElementById("notifList").innerHTML =
+    `<div style="font-size:10px; color:#aaa;">No notifications.</div>`;
+}
+
+/* ========== FRIEND SYSTEM ========== */
+function sendFriendRequest(toUser) {
+  const fromUser = getCurrentUser();
+  if (!fromUser || !toUser) return;
+
+  const reqKey = `FriendRequests_${toUser}`;
+  let requests = JSON.parse(localStorage.getItem(reqKey) || "[]");
+
+  if (!requests.some(r => r.from === fromUser)) {
+    requests.push({
+      from: fromUser,
+      time: Date.now()
+    });
+    localStorage.setItem(reqKey, JSON.stringify(requests));
+  }
+
+  // Receiver notification
+  let receiverKey = `Notifications_${toUser}`;
+  let receiverList = JSON.parse(localStorage.getItem(receiverKey) || "[]");
+  receiverList.push({
+    type: "friend_request_received",
+    from: fromUser,
+    time: Date.now()
+  });
+  localStorage.setItem(receiverKey, JSON.stringify(receiverList));
+
+  // Sender notification
+  let senderKey = `Notifications_${fromUser}`;
+  let senderList = JSON.parse(localStorage.getItem(senderKey) || "[]");
+  senderList.push({
+    type: "friend_request_sent",
+    to: toUser,
+    time: Date.now()
+  });
+  localStorage.setItem(senderKey, JSON.stringify(senderList));
+
+  updateNotifDisplay();
+  alert(`Friend request sent to ${toUser}!`);
+}
+
+function openAddFriend() {
+  const name = prompt("Enter username to add:");
+  if (!name) return;
+  sendFriendRequest(name.trim());
+}
+
+function acceptFriendRequest(fromUser) {
+  const currentUser = getCurrentUser();
+  if (!currentUser) return;
+
+  const reqKey = `FriendRequests_${currentUser}`;
+  let requests = JSON.parse(localStorage.getItem(reqKey) || "[]");
+  requests = requests.filter(r => r.from !== fromUser);
+  localStorage.setItem(reqKey, JSON.stringify(requests));
+
+  const myFriendsKey = `Friends_${currentUser}`;
+  const theirFriendsKey = `Friends_${fromUser}`;
+
+  let myFriends = JSON.parse(localStorage.getItem(myFriendsKey) || "[]");
+  let theirFriends = JSON.parse(localStorage.getItem(theirFriendsKey) || "[]");
+
+  if (!myFriends.includes(fromUser)) myFriends.push(fromUser);
+  if (!theirFriends.includes(currentUser)) theirFriends.push(currentUser);
+
+  localStorage.setItem(myFriendsKey, JSON.stringify(myFriends));
+  localStorage.setItem(theirFriendsKey, JSON.stringify(theirFriends));
+
+  loadFriendRequests();
+  loadFriends();
+}
+
+function denyFriendRequest(fromUser) {
+  const currentUser = getCurrentUser();
+  if (!currentUser) return;
+
+  const reqKey = `FriendRequests_${currentUser}`;
+  let requests = JSON.parse(localStorage.getItem(reqKey) || "[]");
+  requests = requests.filter(r => r.from !== fromUser);
+  localStorage.setItem(reqKey, JSON.stringify(requests));
+
+  loadFriendRequests();
+}
+
+function loadFriendRequests() {
+  const currentUser = getCurrentUser();
+  const container = document.getElementById("friendRequests");
+  if (!currentUser || !container) return;
+
+  const reqKey = `FriendRequests_${currentUser}`;
+  const requests = JSON.parse(localStorage.getItem(reqKey) || "[]");
+
+  container.innerHTML = "";
+
+  if (requests.length === 0) {
+    container.innerHTML = `<div style="font-size:10px; color:#aaa;">No friend requests.</div>`;
+    return;
+  }
+
+  const onlineUsers = JSON.parse(localStorage.getItem("OnlineUsers") || "[]");
+
+  requests.forEach(r => {
+    const row = document.createElement("div");
+    row.className = "friend-row";
+
+    const main = document.createElement("div");
+    main.className = "friend-main";
+
+    const dot = document.createElement("div");
+    dot.className = "friend-status-dot";
+    dot.style.background = onlineUsers.includes(r.from) ? "#2ecc71" : "#7f8c8d";
+
+    const nameLabel = document.createElement("div");
+    nameLabel.className = "friend-name-label";
+    nameLabel.textContent = r.from;
+
+    main.appendChild(dot);
+    main.appendChild(nameLabel);
+
+    const actions = document.createElement("div");
+    actions.className = "friend-actions";
+
+    const acceptBtn = document.createElement("button");
+    acceptBtn.className = "friend-btn friend-btn-accept";
+    acceptBtn.textContent = "ACPT";
+    acceptBtn.onclick = () => acceptFriendRequest(r.from);
+
+    const denyBtn = document.createElement("button");
+    denyBtn.className = "friend-btn friend-btn-deny";
+    denyBtn.textContent = "DENY";
+    denyBtn.onclick = () => denyFriendRequest(r.from);
+
+    actions.appendChild(acceptBtn);
+    actions.appendChild(denyBtn);
+
+    row.appendChild(main);
+    row.appendChild(actions);
+    container.appendChild(row);
+  });
+}
+
+/* ========== FRIENDS LIST ========== */
+function loadFriends() {
+  const currentUser = getCurrentUser();
+  const onlineContainer = document.getElementById("onlineFriends");
+  const offlineContainer = document.getElementById("offlineFriends");
+  if (!currentUser || !onlineContainer || !offlineContainer) return;
+
+  const friends = JSON.parse(localStorage.getItem(`Friends_${currentUser}`) || "[]");
+  const onlineUsers = JSON.parse(localStorage.getItem("OnlineUsers") || "[]");
+
+  onlineContainer.innerHTML = "";
+  offlineContainer.innerHTML = "";
+
+  if (friends.length === 0) {
+    onlineContainer.innerHTML = `<div style="color:white; font-size:12px; padding:10px; text-align:center;">
+      Add Friends And Enjoy Games Without Being Bored!
+    </div>`;
+    return;
+  }
+
+  friends.forEach(username => {
+    const row = document.createElement("div");
+    row.className = "friend-row";
+
+    const main = document.createElement("div");
+    main.className = "friend-main";
+
+    const dot = document.createElement("div");
+    dot.className = "friend-status-dot";
+
+    const isOnline = onlineUsers.includes(username);
+    dot.style.background = isOnline ? "#2ecc71" : "#7f8c8d";
+
+    const nameLabel = document.createElement("div");
+    nameLabel.className = "friend-name-label";
+    nameLabel.textContent = username;
+
+    main.appendChild(dot);
+    main.appendChild(nameLabel);
+
+    row.appendChild(main);
+
+    if (isOnline) {
+      onlineContainer.appendChild(row);
+    } else {
+      offlineContainer.appendChild(row);
+    }
+  });
+}
+
+/* ========== RECOMMENDED USERS ========== */
+function loadRecommended() {
+  const currentUser = getCurrentUser();
+  const container = document.getElementById("recommendedList");
+  if (!currentUser || !container) return;
+
+  const allUsers = JSON.parse(localStorage.getItem("StudSupUsers") || "[]");
+  const friends = JSON.parse(localStorage.getItem(`Friends_${currentUser}`) || "[]");
+
+  const recommended = allUsers.filter(u =>
+    u !== currentUser && !friends.includes(u)
+  );
+
+  container.innerHTML = "";
+
+  if (recommended.length === 0) {
+    container.innerHTML = `<div style="font-size:10px; color:#aaa;">No recommendations.</div>`;
+    return;
+  }
+
+  recommended.forEach(username => {
+    const box = document.createElement("div");
+    box.className = "friend-box";
+    box.style.cursor = "pointer";
+    box.style.marginBottom = "6px";
+    box.textContent = username;
+    box.onclick = () => sendFriendRequest(username);
+    container.appendChild(box);
+  });
+}
+
+/* ========== SEARCH ========== */
+function initSearch() {
+  const search = document.querySelector(".searchbar");
+  if (!search) return;
+
+  search.addEventListener("input", function () {
+    const query = this.value.toLowerCase();
+
+    // Search games
+    document.querySelectorAll(".game-tile").forEach(tile => {
+      const title = tile.querySelector(".game-title").textContent.toLowerCase();
+      tile.style.display = title.includes(query) ? "block" : "none";
+    });
+
+    // Search friends
+    const currentUser = getCurrentUser();
+    const friends = JSON.parse(localStorage.getItem(`Friends_${currentUser}`) || "[]");
+
+    const onlineContainer = document.getElementById("onlineFriends");
+    const offlineContainer = document.getElementById("offlineFriends");
+    if (!onlineContainer || !offlineContainer) return;
+
+    onlineContainer.innerHTML = "";
+    offlineContainer.innerHTML = "";
+
+    const onlineUsers = JSON.parse(localStorage.getItem("OnlineUsers") || "[]");
+
+    friends
+      .filter(f => f.toLowerCase().includes(query))
+      .forEach(f => {
+        const row = document.createElement("div");
+        row.className = "friend-row";
+
+        const main = document.createElement("div");
+        main.className = "friend-main";
+
+        const dot = document.createElement("div");
+        dot.className = "friend-status-dot";
+        const isOnline = onlineUsers.includes(f);
+        dot.style.background = isOnline ? "#2ecc71" : "#7f8c8d";
+
+        const nameLabel = document.createElement("div");
+        nameLabel.className = "friend-name-label";
+        nameLabel.textContent = f;
+
+        main.appendChild(dot);
+        main.appendChild(nameLabel);
+        row.appendChild(main);
+
+        if (isOnline) {
+          onlineContainer.appendChild(row);
+        } else {
+          offlineContainer.appendChild(row);
+        }
+      });
+
+    if (!onlineContainer.innerHTML && !offlineContainer.innerHTML) {
+      onlineContainer.innerHTML = `<div style="color:white; font-size:12px; padding:10px;">No users found.</div>`;
+    }
+  });
+}
+
+/* ========== SHOP ========== */
+function toggleShop() {
+  const panel = document.getElementById("shopPanel");
+  panel.classList.toggle("open");
+}
+
+function buyItem(cost) {
+  const user = getCurrentUser();
+  if (!user) return;
+  let current = getTickets(user);
+  if (current < cost) {
+    alert("Not enough tickets!");
+    return;
+  }
+  setTickets(user, current - cost);
+  alert("Item purchased!");
+}
+
+function buyMultiplier(mult, cost) {
+  const user = getCurrentUser();
+  if (!user) return;
+  let current = getTickets(user);
+  if (current < cost) {
+    alert("Not enough tickets!");
+    return;
+  }
+  setTickets(user, current - cost);
+  localStorage.setItem(`Multiplier_${user}`, String(mult));
+  alert("Multiplier purchased!");
+}
+
+/* ========== TERMINAL / OWNER COMMANDS (SIMPLIFIED) ========== */
+function isOwner() {
+  return getCurrentUser() === OWNER_NAME;
+}
+
+function runCommand(input) {
+  if (!isOwner()) {
+    console.log("Access denied.");
+    return;
+  }
+
+  // !tickets("user") amount
+  if (input.startsWith("!tickets")) {
+    const match = input.match(/!tickets\("(.+)"\)\s+(-?\d+)/);
+    if (!match) {
+      console.log('Syntax: !tickets("username") amount');
+      return;
+    }
+
+    const user = match[1];
+    const amount = parseInt(match[2]);
+    let current = getTickets(user);
+    current += amount;
+    setTickets(user, current);
+    console.log(`Adjusted ${user}'s tickets by ${amount}. New total: ${current}`);
+    return;
+  }
+
+  // !settickets("user") amount
+  if (input.startsWith("!settickets")) {
+    const match = input.match(/!settickets\("(.+)"\)\s+(-?\d+)/);
+    if (!match) {
+      console.log('Syntax: !settickets("username") amount');
+      return;
+    }
+
+    const user = match[1];
+    const amount = parseInt(match[2]);
+    setTickets(user, amount);
+    console.log(`Set ${user}'s tickets to ${amount}`);
+    return;
+  }
+
+  // !verify("user")
+  if (input.startsWith("!verify")) {
+    const match = input.match(/!verify\("(.+)"\)/);
+    if (!match) {
+      console.log('Syntax: !verify("username")');
+      return;
+    }
+
+    const user = match[1];
+    const key = `Verified_${user}`;
+    localStorage.setItem(key, "true");
+    console.log(`${user} is now VERIFIED!`);
+
+    const currentUser = getCurrentUser();
+    if (currentUser === user) {
+      const badge = document.getElementById("verifiedBadge");
+      if (badge) badge.style.display = "inline-block";
+    }
+    return;
+  }
+
+  console.log("Unknown command.");
+}
+
+/* ========== MESSAGES (LOCAL ONLY) ========== */
+function initMessages() {
+  const box = document.getElementById("messagesBox");
+  const sendBtn = document.getElementById("sendMessageBtn");
+  const input = document.getElementById("messageInput");
+  const list = document.getElementById("messagesList");
+
+  if (!box || !sendBtn || !input || !list) return;
+
+  // Simple toggle with command
+  // You can expand this later
+  sendBtn.addEventListener("click", () => {
+    const txt = input.value.trim();
+    if (!txt) return;
+    const div = document.createElement("div");
+    div.textContent = txt;
+    list.appendChild(div);
+    input.value = "";
+  });
+}
+
+/* ========== UI HOOKS ========== */
+function hookUI() {
+  const bell = document.getElementById("notifBell");
+  if (bell) bell.addEventListener("click", openNotifPanel);
+
+  const terminal = document.getElementById("terminal");
+  if (terminal) {
+    terminal.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const cmd = terminal.value.trim();
+        terminal.value = "";
+        if (cmd) runCommand(cmd);
+      }
+    });
+  }
+
+  initMessages();
+}
+
+/* ========== INITIAL ONLINE USERS (LOCAL DEMO) ========== */
+if (!localStorage.getItem("OnlineUsers")) {
+  localStorage.setItem("OnlineUsers", JSON.stringify([]));
+}
 </script>
 
 </body>
-</html>
+</html>z
