@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>STUDSUP</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { background: #222; color: #fff; height: 100vh; overflow: hidden; }
+    .app { display: flex; height: 100vh; width: 100vw; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 220px;
+      background: #b30000;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-title { font-size: 26px; font-weight: 900; margin-bottom: 20px; text-shadow: 1px 1px 0 #000; }
+    .sidebar-button {
+      background: #111; color: #fff; border-radius: 6px;
+      padding: 10px 12px; margin-bottom: 8px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      border: 2px solid #000; transition: 0.15s;
+    }
+    .sidebar-button:hover { background: #222; transform: translateY(-1px); }
+    .sidebar-button.active { outline: 2px solid #fff; }
+    .sidebar-button.blue { background: #007bff; }
+    .sidebar-button.small-text { font-size: 11px; }
+    .sidebar-button .subtext { font-size: 10px; display: block; margin-top: 4px; }
+
+    /* MAIN */
+    .main { flex: 1; display: flex; flex-direction: column; background: #333; }
+
+    /* TOP BAR */
+    .topbar {
+      height: 60px; background: #111;
+      display: flex; align-items: center; justify-content: flex-end;
+      padding: 0 20px; gap: 20px; border-bottom: 3px solid #000;
+    }
+    .top-username { color: #00a2ff; font-weight: 700; font-size: 13px; }
+    .top-tickets {
+      background: #fff; color: #000; padding: 6px 10px;
+      border-radius: 4px; font-size: 12px; font-weight: 700;
+      border: 2px solid #000;
+    }
+    .top-settings { color: #00a2ff; font-weight: 700; font-size: 13px; cursor: pointer; }
+
+    /* CONTENT */
+    .content-wrapper { flex: 1; display: flex; background: #555; border-top: 3px solid #000; }
+    .content { flex: 1; padding: 20px; background: #777; overflow-y: auto; }
+    .content-section { display: none; }
+    .content-section.active { display: block; }
+    .content-header { font-size: 20px; font-weight: 900; margin-bottom: 15px; text-shadow: 1px 1px 0 #000; }
+    .sub-header { font-size: 16px; font-weight: 700; margin: 10px 0 8px; text-shadow: 1px 1px 0 #000; }
+
+    /* GAMES */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: 90px;
+      gap: 15px;
+    }
+    .game-card {
+      background: #ff8c00; border-radius: 18px; border: 3px solid #000;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 13px; color: #b30000;
+      text-shadow: 1px 1px 0 #000; cursor: pointer;
+      transition: 0.1s;
+    }
+    .game-card:hover { transform: translateY(-2px); box-shadow: 0 3px 0 #000; }
+
+    /* FRIENDS */
+    .friends {
+      width: 180px; background: #000; padding: 20px 10px;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 15px; border-left: 3px solid #000;
+    }
+    .friend-avatar {
+      width: 110px; height: 40px; background: #fff;
+      border-radius: 999px; display: flex; align-items: center;
+      justify-content: center; color: #000; font-size: 11px;
+      font-weight: 700; border: 2px solid #000; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-title">STUDSUP</div>
+
+    <div class="sidebar-button active" data-screen="home">CLASSICS (HOME)</div>
+    <div class="sidebar-button" data-screen="shop">SHOP</div>
+    <div class="sidebar-button" data-screen="messages">MESSAGES</div>
+    <div class="sidebar-button" data-screen="buy-scripts">BUY SCRIPTS!</div>
+    <div class="sidebar-button" data-screen="client-exploits">CLIENT SIDED EXPLOITS</div>
+    <div class="sidebar-button" data-screen="server-executors">SERVER SIDED EXECUTORS</div>
+
+    <div class="sidebar-button small-text" data-screen="apply-admin">
+      APPLY FOR ADMIN
+      <span class="subtext">YOU WOT GET PAID :C<br>BECAUSE I BROKE TOO</span>
+    </div>
+
+    <div class="sidebar-button blue" data-screen="buy-tickets">BUY TICKETS [TY:}]</div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div class="top-username">USERNAME{BADGEPNG}{PREMIUMBADGE.PNG}</div>
+      <div class="top-tickets">TICKETS PNG 100</div>
+      <div class="top-settings" data-screen="settings">SETTINGS UNICOFE</div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content-wrapper">
+      <div class="content">
+
+        <!-- HOME -->
+        <div class="content-section active" id="screen-home">
+          <div class="content-header">Classic's!</div>
+
+          <div class="sub-header">Continue Games</div>
+          <div class="games-grid" id="continue-games"></div>
+
+          <div class="sub-header">Recommended Games</div>
+          <div class="games-grid" id="recommended-games"></div>
+
+          <div class="sub-header">All Classics</div>
+          <div class="games-grid" id="all-games"></div>
+        </div>
+
+        <!-- OTHER SCREENS -->
+        <div class="content-section" id="screen-shop"><div class="content-header">Shop</div></div>
+        <div class="content-section" id="screen-messages"><div class="content-header">Messages</div></div>
+        <div class="content-section" id="screen-buy-scripts"><div class="content-header">Buy Scripts</div></div>
+        <div class="content-section" id="screen-client-exploits"><div class="content-header">Client Exploits</div></div>
+        <div class="content-section" id="screen-server-executors"><div class="content-header">Server Executors</div></div>
+        <div class="content-section" id="screen-apply-admin"><div class="content-header">Apply for Admin</div></div>
+        <div class="content-section" id="screen-buy-tickets"><div class="content-header">Buy Tickets</div></div>
+        <div class="content-section" id="screen-settings"><div class="content-header">Settings</div></div>
+
+      </div>
+
+      <!-- FRIENDS -->
+      <div class="friends">
+        <div class="friend-avatar">friend avata</div>
+        <div class="friend-avatar">friend avata</div>
+        <div class="friend-avatar">friend avata</div>
+        <div class="friend-avatar">friend avata</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* SPA ROUTING */
+document.querySelectorAll('.sidebar-button, .top-settings').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const screen = btn.dataset.screen;
+    if (!screen) return;
+
+    document.querySelectorAll('.content-section').forEach(sec =>
+      sec.classList.remove('active')
+    );
+    document.querySelector('#screen-' + screen).classList.add('active');
+
+    document.querySelectorAll('.sidebar-button').forEach(b =>
+      b.classList.remove('active')
+    );
+    if (btn.classList.contains('sidebar-button')) btn.classList.add('active');
+  });
+});
+
+/* GAME GENERATOR */
+function generateGames(containerId, count) {
+  const container = document.getElementById(containerId);
+  for (let i = 1; i <= count; i++) {
+    const card = document.createElement('div');
+    card.className = 'game-card';
+    card.textContent = `game${i}.png`;
+    card.onclick = () => window.location.href = `game${i}.html`;
+    container.appendChild(card);
+  }
+}
+
+generateGames('continue-games', 4);
+generateGames('recommended-games', 4);
+generateGames('all-games', 20); // change to however many you want
+</script>
+
+</body>
+</html>
