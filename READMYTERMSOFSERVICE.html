@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>StudSup</title>
+
+  <!-- Michroma font -->
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      font-family: 'Michroma', sans-serif;
+      color: #fff;
+    }
+
+    /* Outer glossy red bar */
+    .topbar {
+      width: 100%;
+      height: 70px;
+      background: linear-gradient(
+        to bottom,
+        #ff4d4d,
+        #d40000
+      );
+      border-bottom: 2px solid #8b0000;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding-left: 20px;
+    }
+
+    /* Glossy shine strip */
+    .topbar::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 30%;
+      background: rgba(255,255,255,0.25);
+      border-radius: 0 0 12px 12px;
+      pointer-events: none;
+    }
+
+    /* Inner black text area */
+    .topbar-inner {
+      background: #000;
+      padding: 10px 25px;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 20px;
+      z-index: 2;
+    }
+
+    /* TOS container */
+    .tos {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #000;
+      padding: 25px;
+      border-radius: 12px;
+      border: 1px solid #333;
+      line-height: 1.6;
+    }
+
+    .tos h2 {
+      margin-top: 0;
+      color: #ff4d4d;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Topbar with left-aligned logo -->
+  <div class="topbar">
+    <div class="topbar-inner">
+      StudSup
+    </div>
+  </div>
+
+  <!-- TOS TEXT DIRECTLY ON PAGE -->
+  <div class="tos">
+    <h2>📘 1. Acceptance of Terms</h2>
+    <p>By using StudSup, you agree to follow these Terms of Service. If you don’t agree, don’t use the platform.</p>
+
+    <h2>🛠️ 2. Allowed Use</h2>
+    <p>StudSup is a platform for:</p>
+    <ul>
+      <li>creating games</li>
+      <li>running scripts in any game <strong>EXCEPT</strong> external platforms — <strong>IF YOU DO, OUR STRICT MODERATION TEAM WILL EMAIL BLOCK BAN YOU.</strong></li>
+      <li>customizing your experience</li>
+      <li>building tools, UI, and systems</li>
+    </ul>
+    <p>You can do anything that doesn’t break the platform or harm other users.</p>
+
+    <h2>🚫 3. Prohibited Actions</h2>
+    <ul>
+      <li>damage, crash, or overload StudSup</li>
+      <li>steal or copy other users’ projects</li>
+      <li>bypass security systems</li>
+      <li>upload harmful files</li>
+      <li>impersonate staff</li>
+      <li>use StudSup to attack other platforms</li>
+    </ul>
+    <p>Basically: don’t be a menace.</p>
+
+    <h2>📦 4. User Content</h2>
+    <p>Anything you create is yours. But by uploading it to StudSup, you give permission for the platform to:</p>
+    <ul>
+      <li>store it</li>
+      <li>display it</li>
+      <li>run it</li>
+    </ul>
+    <p>We don’t claim ownership of your creations.</p>
+
+    <h2>🔒 5. Privacy</h2>
+    <p>StudSup does not collect unnecessary personal information. We only store what’s needed to run your account and your projects.</p>
+
+    <h2>⚠️ 6. No Liability</h2>
+    <p>StudSup is provided “as is.” We are not responsible for:</p>
+    <ul>
+      <li>lost data</li>
+      <li>broken projects</li>
+      <li>bugs</li>
+      <li>downtime</li>
+      <li>user mistakes</li>
+    </ul>
+    <p>You use the platform at your own risk.</p>
+
+    <h2>🛑 7. Enforcement</h2>
+    <p>If you break the rules, we can:</p>
+    <ul>
+      <li>warn you</li>
+      <li>restrict features</li>
+      <li>suspend your account</li>
+      <li>delete harmful content</li>
+      <li><strong>email block ban you</strong></li>
+    </ul>
+    <p>We decide the punishment based on the situation.</p>
+
+    <h2>📅 8. Updates</h2>
+    <p>We can update these Terms at any time. If we do, we’ll post the new version on the platform.</p>
+
+    <h2>🏆 9. Modifiable Files & Hall of Fame Rewards</h2>
+    <p>StudSup allows users to modify and improve files. If your creation stands out and shows real StudSup energy, you may be featured in the #HallofFame in our discord and awarded up to <strong>99,999 T$ (Tickets Dollar)</strong>. Only the best make it.</p>
+
+  </div>
+
+</body>
+</html>

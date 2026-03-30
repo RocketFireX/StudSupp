@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>StudSup! - Login</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background: #1c163a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Press Start 2P', monospace;
+  color: #ffffff;
+}
+
+.wrap {
+  text-align: center;
+}
+
+h1 {
+  margin: 0 0 40px 0;
+  font-size: 36px;
+  color: #ff2b2b;
+}
+
+label {
+  display: block;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+input {
+  display: block;
+  width: 360px;
+  padding: 18px;
+  margin: 18px auto;
+  background: #000000;
+  border: none;
+  color: #ffffff;
+  font-size: 16px;
+  font-family: 'Press Start 2P', monospace;
+}
+
+button {
+  margin-top: 30px;
+  padding: 18px 40px;
+  background: #222222;
+  color: #3b82f6;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  font-family: 'Press Start 2P', monospace;
+}
+
+#togglePass {
+  margin-top: -10px;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  background: #333;
+  color: #fff;
+  border: none;
+  font-family: 'Press Start 2P', monospace;
+  cursor: pointer;
+}
+</style>
+
+</head>
+<body>
+
+<div class="wrap">
+  <h1>StudSup!</h1>
+
+  <label>Email</label>
+  <input id="email" type="text" placeholder="Enter Email">
+
+  <label>Password</label>
+  <input id="password" type="password" placeholder="Enter Password">
+
+  <button type="button" id="togglePass">SHOW</button>
+  <button onclick="loginAccount()">Login</button>
+</div>
+
+<!-- FIREBASE LOGIN SYSTEM -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD9-BQnJc1iqKiDD3jgfbRFVCXTTYH--hA",
+    authDomain: "ssauth-d8368.firebaseapp.com",
+    projectId: "ssauth-d8368",
+    storageBucket: "ssauth-d8368.firebasestorage.app",
+    messagingSenderId: "662748350969",
+    appId: "1:662748350969:web:b23b9c3b82e008fba39528",
+    measurementId: "G-KJVMS678ZF"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  window.loginAccount = function () {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        // Username is already saved during signup
+        window.location.href = "dashboard.html";
+      })
+      .catch(err => {
+        alert(err.message);
+      });
+  };
+</script>
+
+<!-- SHOW/HIDE PASSWORD -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const passInput = document.getElementById("password");
+  const toggleBtn = document.getElementById("togglePass");
+
+  toggleBtn.addEventListener("click", () => {
+    if (passInput.type === "password") {
+      passInput.type = "text";
+      toggleBtn.textContent = "HIDE";
+    } else {
+      passInput.type = "password";
+      toggleBtn.textContent = "SHOW";
+    }
+  });
+});
+</script>
+
+</body>
+</html>

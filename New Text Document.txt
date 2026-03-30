@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>StudSup! - Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  background: #2a0001;
+  font-family: 'Press Start 2P', monospace;
+  color: white;
+  display: flex;
+}
+<style>
+body {
+  margin: 0;
+  background: #2a0001;
+  font-family: 'Press Start 2P', monospace;
+  color: white;
+  display: flex;
+}
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">StudSup</div>
+
+  <input class="searchbar" placeholder="SEARCH HERE, GAMES, PEOPLE, ETC">
+
+  <!-- NOTIFICATION BELL -->
+  <img src="bell.png" id="notifBell" class="notif-bell">
+  <div id="notifCount" class="notif-count">0</div>
+</div>
+
+<div class="sidebar">
+  <button class="groupchat-btn">+ Create Group Chat</button>
+  <button class="groupchat-btn" onclick="openAddFriend()">+ Add Friend</button>
+
+  <h3 style="color:white;">Friends</h3>
+  <div id="friendsList"></div>
+
+  <h3 style="color:white; margin-top:20px;">Recommended</h3>
+  <div id="recommendedList"></div>
+</div>
+
+<!-- Your game grid stays the same -->
+<script>
+// ===============================
+// NOTIFICATIONS
+// ===============================
+function increaseNotification(type) {
+  let notif = JSON.parse(localStorage.getItem("Notifications") || "{}");
+  notif[type] = (notif[type] || 0) + 1;
+  localStorage.setItem("Notifications", JSON.stringify(notif));
+  updateNotifDisplay();
+}
+
+function updateNotifDisplay() {
+  const notif = JSON.parse(localStorage.getItem("Notifications") || "{}");
+  const total = Object.values(notif).reduce((a, b) => a + b, 0);
+
+  const count = document.getElementById("notifCount");
+  if (total > 0) {
+    count.textContent = total;
+    count.style.display = "inline-block";
+  } else {
+    count.style.display = "none";
+  }
+}
+
+// ===============================
+// FRIEND REQUESTS
+// ===============================
+function sendFriendRequest(toUser) {
+  const key = `FriendRequests_${toUser}`;
+  let list = JSON.parse(localStorage.getItem(key) || "[]");
+
+  const fromUser = localStorage.getItem("StudSupCurrentUser");
+  if (!fromUser) return;
+
+  if (!list.includes(fromUser)) {
+    list.push(fromUser);
+    localStorage.setItem(key, JSON.stringify(list));
+  }
+
+  increaseNotification("friend");
+}
+
+// ===============================
+// FRIEND LIST + RECOMMENDED
+// ===============================
+function loadFriends() {
+  const currentUser = localStorage.getItem("StudSupCurrentUser");
+  const friends = JSON.parse(localStorage.getItem(`Friends_${currentUser}`) || "[]");
+  const container = document.getElementById("friendsList");
+
+  container.innerHTML = "";
+
+  if (friends.length === 0) {
+    container.innerHTML = `
+      <div style="color:white; font-size:12px; padding:10px; text-align:center;">
+        Add Friends And Enjoy Games Without Being Bored!
+      </div>
+    `;
+    return;
+  }
+
+  friends.forEach(f => {
+    const box = document.createElement("div");
+    box.className = "friend-box";
+    box.textContent = f;
+    container.appendChild(box);
+  });
+}
+
+function loadRecommended() {
+  const allUsers = ["Alex", "Mia", "John", "Luna", "Kai", "Nova"];
+  const currentUser = localStorage.getItem("StudSupCurrentUser");
+
+  const friends = JSON.parse(localStorage.getItem(`Friends_${currentUser}`) || "[]");
+
+  const recommended = allUsers.filter(u => u !== currentUser && !friends.includes(u));
+
+  const container = document.getElementById("recommendedList");
+  container.innerHTML = "";
+
+  recommended.forEach(r => {
+    const box = document.createElement("div");
+    box.className = "friend-box";
+    box.textContent = r;
+    box.onclick = () => sendFriendRequest(r);
+    container.appendChild(box);
+  });
+}
+
+// ===============================
+// ADD FRIEND BUTTON
+// ===============================
+function openAddFriend() {
+  const name = prompt("Enter username to add:");
+  if (!name) return;
+  sendFriendRequest(name);
+  alert("Friend request sent!");
+}
+
+// ===============================
+// SEARCH BAR FILTER
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelector(".searchbar").addEventListener("input", function () {
+    const query = this.value.toLowerCase();
+
+    // Search games
+    document.querySelectorAll(".game-tile").forEach(tile => {
+      const title = tile.querySelector(".game-title").textContent.toLowerCase();
+      tile.style.display = title.includes(query) ? "block" : "none";
+    });
+
+    // Search friends
+    const currentUser = localStorage.getItem("StudSupCurrentUser");
+    const friends = JSON.parse(localStorage.getItem(`Friends_${currentUser}`) || "[]");
+
+    const container = document.getElementById("friendsList");
+    container.innerHTML = "";
+
+    friends
+      .filter(f => f.toLowerCase().includes(query))
+      .forEach(f => {
+        const box = document.createElement("div");
+        box.className = "friend-box";
+        box.textContent = f;
+        container.appendChild(box);
+      });
+
+    if (container.innerHTML === "") {
+      container.innerHTML = `<div style="color:white; font-size:12px; padding:10px;">No users found.</div>`;
+    }
+  });
+
+  updateNotifDisplay();
+  loadFriends();
+  loadRecommended();
+});
+</script>
+
+/* NOTIFICATION BELL */
+.notif-bell {
+  width: 32px; /* resize here */
+  height: 32px;
+  cursor: pointer;
+  margin-left: 20px;
+}
+
+.notif-count {
+  background: yellow;
+  color: black;
+  font-size: 12px;
+  padding: 3px 6px;
+  border-radius: 50%;
+  position: relative;
+  left: -10px;
+  top: -10px;
+  display: none;
+}
+
+/* SLIDING SHOP PANEL */
+.shop-panel {
+  position: fixed;
+  top: 0;
+  right: -350px;
+  width: 350px;
+  height: 100%;
+  background: #111;
+  padding: 20px;
+  box-sizing: border-box;
+  transition: right 5.23s ease;
+  z-index: 9999;
+  border-left: 4px solid #ff2b2b;
+}
+
+.shop-panel.open {
+  right: 0;
+}
+
+.shop-panel h2 {
+  color: white;
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.shop-panel button {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #ff2b2b;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-family: 'Press Start 2P';
+}
+
+/* SHOP TOGGLE BUTTON */
+.shop-toggle {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  background: #ff2b2b;
+  padding: 15px 20px;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-family: 'Press Start 2P';
+  z-index: 10000;
+}
+
+/* TICKETS BOX */
+.tickets-box {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 10px;
+}
+
+.tickets-icon {
+  width: 123px;
+  height: auto;
+  image-rendering: pixelated;
+  margin-right: 10px;
+}
+
+#ticketAmount {
+  font-size: 18px;
+  color: black;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background: #ff2b2b;
+  display: flex;
+  align-items: center;
+  padding: 0 30px;
+  box-sizing: border-box;
+}
+
+.logo {
+  font-size: 28px;
+  color: white;
+  margin-right: 40px;
+}
+
+.searchbar {
+  width: 500px;
+  padding: 14px;
+  border: none;
+  background: #000;
+  color: white;
+  font-size: 12px;
+}
+
+/* USERNAME DISPLAY */
+.username-display {
+  margin-left: 20px;
+  font-size: 20px;
+  color: purple;
+}
+
+/* MAIN CONTENT */
+.main {
+  margin-top: 100px;
+  margin-left: 40px;
+  width: 70%;
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.game-tile {
+  text-align: center;
+}
+
+.thumb {
+  width: 100%;
+  height: 160px;
+  background: white;
+  border-radius: 12px;
+}
+
+.game-title {
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+/* RIGHT SIDEBAR */
+.sidebar {
+  position: fixed;
+  right: 0;
+  top: 80px;
+  width: 260px;
+  height: calc(100% - 80px);
+  background: #000;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.groupchat-btn {
+  width: 100%;
+  padding: 14px;
+  background: #ff2b2b;
+  border: none;
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.friend-box {
+  width: 100%;
+  height: 60px;
+  background: #111;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  font-size: 12px;
+}
+</style>
+
+<script>
+// ===============================
+// OWNER + GLOBAL HELPERS
+// ===============================
+const OWNER_NAME = "StudSupCurrentUser";
+
+function isOwner() {
+  return localStorage.getItem("StudSupCurrentUser") === OWNER_NAME;
+}
+
+// OWNER SECRET TOOLS
+window.ownerLogin = function(username) {
+  if (!isOwner()) {
+    console.log("Access denied.");
+    return;
+  }
+  localStorage.setItem("StudSupCurrentUser", username);
+  console.log("Owner logged into:", username);
+  window.location.reload();
+};
+
+// ===============================
+// OWNER COMMAND SYSTEM
+// ===============================
+let ticketsPaused = false;
+
+function runCommand(input) {
+  if (!isOwner()) {
+    console.log("Access denied.");
+    return;
+  }
+// !verify("user")
+if (input.startsWith("!verify")) {
+  const match = input.match(/!verify\("(.+)"\)/);
+  if (!match) {
+    console.log('Syntax: !verify("username")');
+    return;
+  }
+
+  const user = match[1];
+  const key = `Verified_${user}`;
+
+  localStorage.setItem(key, "true");
+  console.log(`${user} is now VERIFIED!`);
+
+  // If verifying the currently logged-in user, show badge instantly
+  const currentUser = localStorage.getItem("StudSupCurrentUser");
+  if (currentUser === user) {
+    const badge = document.getElementById("verifiedBadge");
+    if (badge) badge.style.display = "inline-block";
+  }
+
+  return;
+}
+  // !ticketsPause(true/false)
+  if (input.startsWith("!ticketsPause")) {
+    const match = input.match(/!ticketsPause\((true|false)\)/i);
+    if (!match) {
+      console.log('Syntax: !ticketsPause(true) or !ticketsPause(false)');
+      return;
+    }
+
+    ticketsPaused = match[1].toLowerCase() === "true";
+    console.log("Ticket earning paused:", ticketsPaused);
+    return;
+  }
+
+  // !halftickets("user")
+  if (input.startsWith("!halftickets")) {
+    const match = input.match(/!halftickets\("(.+)"\)/);
+    if (!match) {
+      console.log('Syntax: !halftickets("username")');
+      return;
+    }
+
+    const user = match[1];
+    const key = `Tickets_${user}`;
+
+    let current = parseInt(localStorage.getItem(key)) || 0;
+    let half = Math.floor(current / 2);
+
+    localStorage.setItem(key, half.toString());
+    console.log(`Halved ${user}'s tickets. New total: ${half}`);
+    return;
+  }
+
+  // !settickets("user") amount
+  if (input.startsWith("!settickets")) {
+    const match = input.match(/!settickets\("(.+)"\)\s+(-?\d+)/);
+    if (!match) {
+      console.log('Syntax: !settickets("username") amount');
+      return;
+    }
+
+    const user = match[1];
+    const amount = parseInt(match[2]);
+
+    const key = `Tickets_${user}`;
+    localStorage.setItem(key, amount.toString());
+
+    console.log(`Set ${user}'s tickets to ${amount}`);
+    return;
+  }
+
+  // !wipe("user")
+  if (input.startsWith("!wipe")) {
+    const match = input.match(/!wipe\("(.+)"\)/);
+    if (!match) {
+      console.log('Syntax: !wipe("username")');
+      return;
+    }
+
+    const user = match[1];
+
+    localStorage.setItem(`Tickets_${user}`, "0");
+    localStorage.setItem(`Multiplier_${user}`, "1");
+
+    console.log(`Wiped ${user}: tickets=0, multiplier=1`);
+    return;
+  }
+
+  // !tickets("user") amount
+  if (input.startsWith("!tickets")) {
+    const match = input.match(/!tickets\("(.+)"\)\s+(-?\d+)/);
+    if (!match) {
+      console.log('Syntax: !tickets("username") amount');
+      return;
+    }
+
+    const user = match[1];
+    const amount = parseInt(match[2]);
+
+    const key = `Tickets_${user}`;
+    let current = parseInt(localStorage.getItem(key)) || 0;
+
+    current += amount;
+    localStorage.setItem(key, current.toString());
+
+    console.log(`Adjusted ${user}'s tickets by ${amount}. New total: ${current}`);
+    return;
+  }
+
+  // !setmultiplier("user") x
+  if (input.startsWith("!setmultiplier")) {
+    const match = input.match(/!setmultiplier\("(.+)"\)\s+(\d+)/);
+    if (!match) {
+      console.log('Syntax: !setmultiplier("username") x');
+      return;
+    }
+
+    const user = match[1];
+    const mult = parseInt(match[2]);
+
+    const key = `Multiplier_${user}`;
+    localStorage.setItem(key, mult.toString());
+
+    console.log(`Multiplier for ${user} set to x${mult}`);
+    return;
+  }
+
+  // !givepass("user")
+  if (input.startsWith("!givepass")) {
+    const match = input.match(/!givepass\("(.+)"\)/);
+    if (!match) {
+      console.log('Syntax: !givepass("username")');
+      return;
+    }
+
+    const user = match[1];
+    const key = `GamePass_${user}`;
+
+    localStorage.setItem(key, "owned");
+
+    console.log(`${user} now owns the Game Pass!`);
+    return;
+  }
+
+  console.log("Unknown command.");
+}
+
+// ===============================
+// SPEED + INACTIVITY LOGIC
+// ===============================
+let lastActivity = Date.now();
+
+function updateActivity() {
+  lastActivity = Date.now();
+}
+
+window.addEventListener("mousemove", updateActivity);
+window.addEventListener("keydown", updateActivity);
+window.addEventListener("click", updateActivity);
+window.addEventListener("touchstart", updateActivity);
+
+function getDelayForMultiplier(mult) {
+  if (mult >= 15) return 1000;
+  if (mult >= 2) return 60000;
+  return 180000;
+}
+
+function startEarningLoop(currentUser, ticketKey, multKey) {
+  function loop() {
+    let mult = parseFloat(localStorage.getItem(multKey)) || 1;
+    let delay = isOwner() ? 1 : getDelayForMultiplier(mult);
+
+    const inactiveFor = Date.now() - lastActivity;
+    const inactiveLimit = 60000;
+
+    if (!ticketsPaused && inactiveFor < inactiveLimit) {
+      let current = parseInt(localStorage.getItem(ticketKey)) || 0;
+      current += 1;
+      localStorage.setItem(ticketKey, current.toString());
+      if (typeof updateTicketDisplay === "function") updateTicketDisplay();
+    }
+
+    setTimeout(loop, delay);
+  }
+
+  loop();
+}
+
+// ===============================
+// MAIN LOAD LOGIC
+// ===============================
+window.addEventListener("load", () => {
+  const currentUser = localStorage.getItem("StudSupCurrentUser");
+  if (!currentUser) {
+    window.location.href = "StartPageTologinsignup.html";
+    return;
+  }
+// VERIFIED BADGE CHECK
+const verifiedKey = `Verified_${currentUser}`;
+const badge = document.getElementById("verifiedBadge");
+
+if (localStorage.getItem(verifiedKey) === "true") {
+  badge.style.display = "inline-block";
+} else {
+  badge.style.display = "none";
+}
+  const ticketKey = `Tickets_${currentUser}`;
+  const multKey = `Multiplier_${currentUser}`;
+
+  if (!localStorage.getItem(ticketKey)) {
+    localStorage.setItem(ticketKey, "100");
+  }
+  if (!localStorage.getItem(multKey)) {
+    localStorage.setItem(multKey, "1");
+  }
+
+  function updateTicketDisplay() {
+    document.getElementById("ticketAmount").textContent =
+      localStorage.getItem(ticketKey);
+  }
+
+  window.updateTicketDisplay = updateTicketDisplay;
+  updateTicketDisplay();
+
+  startEarningLoop(currentUser, ticketKey, multKey);
+
+  const terminal = document.getElementById("terminal");
+  if (terminal) {
+    terminal.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        runCommand(e.target.value);
+        e.target.value = "";
+      }
+    });
+  }
+
+  const music = document.getElementById("bgMusic");
+  if (music) {
+    music.volume = 0.1;
+    music.play().catch(() => {
+      console.log("Autoplay blocked — waiting for user click");
+    });
+
+    document.addEventListener("click", () => {
+      if (music.paused) {
+        music.play();
+      }
+    }, { once: true });
+  }
+});
+
+// ===============================
+// SHOP + PURCHASE LOGIC
+// ===============================
+function toggleShop() {
+  const panel = document.getElementById("shopPanel");
+  panel.classList.toggle("open");
+}
+
+function buyItem(cost) {
+  const currentUser = localStorage.getItem("StudSupCurrentUser");
+  if (!currentUser) return;
+
+  const ticketKey = `Tickets_${currentUser}`;
+  let current = parseInt(localStorage.getItem(ticketKey));
+
+  if (current >= cost) {
+    current -= cost;
+    localStorage.setItem(ticketKey, current.toString());
+    if (typeof updateTicketDisplay === "function") updateTicketDisplay();
+    console.log("Purchase successful!");
+  } else {
+    console.log("Not enough tickets!");
+  }
+}
+
+function unlockItem(itemName) {
+  const currentUser = localStorage.getItem("StudSupCurrentUser");
+  if (!currentUser) return;
+
+  const key = `${itemName}_${currentUser}`;
+  localStorage.setItem(key, "owned");
+  console.log(itemName + " unlocked for " + currentUser + "!");
+}
+
+function buyMultiplier(x, cost) {
+  const currentUser = localStorage.getItem("StudSupCurrentUser");
+  if (!currentUser) return;
+
+  const ticketKey = `Tickets_${currentUser}`;
+  const multKey = `Multiplier_${currentUser}`;
+
+  let current = parseInt(localStorage.getItem(ticketKey));
+
+  if (current >= cost) {
+    current -= cost;
+    localStorage.setItem(ticketKey, current.toString());
+    localStorage.setItem(multKey, x.toString());
+    if (typeof updateTicketDisplay === "function") updateTicketDisplay();
+    console.log("Multiplier upgraded to x" + x + " for " + currentUser);
+  } else {
+    console.log("Not enough tickets!");
+  }
+}
+</script>
+
+</head>
+
+<body>
+<script>
+// ===============================
+// DEVTOOLS DETECTOR
+// ===============================
+function banUserForDevtools() {
+  const user = localStorage.getItem("StudSupCurrentUser");
+  if (!user) return;
+
+  // OWNER IMMUNITY
+  if (user === "StudSupCurrentUser") return;
+
+  localStorage.setItem(`Banned_${user}`, "true");
+  window.location.href = "Detector.html";
+}
+  // Mark user as banned
+  localStorage.setItem(`Banned_${user}`, "true");
+
+  // Redirect to detector page
+  window.location.href = "Detector.html";
+}
+
+// DevTools detection loop
+let checkDevtools = setInterval(() => {
+  const start = performance.now();
+  debugger;
+  const end = performance.now();
+
+  // If debugger took too long, DevTools is open
+  if (end - start > 50) {
+    banUserForDevtools();
+  }
+}, 500);
+</script>
+<body>
+s
+<input id="terminal" placeholder="Enter command..."
+style="position:fixed; bottom:80px; left:20px; width:300px; padding:10px; font-family:'Press Start 2P';">
+
+<audio id="bgMusic" loop>
+  <source src="studsup_music.mp3" type="audio/mpeg">
+</audio>
+
+<div class="topbar">
+  <div class="logo">StudSup</div>
+  <input class="searchbar" placeholder="SEARCH HERE, GAMES, PEOPLE, ETC">
+
+  <div class="tickets-box">
+    <img src="Tickets.png" class="tickets-icon">
+    <span id="ticketAmount">0</span>
+  </div>
+
+  <div id="usernameDisplay" class="username-display"></div>
+<img id="verifiedBadge" src="verified.png" 
+    <img id="verifiedBadge" src="verified.png"
+     style="
+       width:40px;
+       height:40px;
+       margin-left:8px;
+       display:none;
+       vertical-align:middle;
+       image-rendering:pixelated;
+       position:relative;
+       top:-2px;
+     ">
+</div>
+
+<div class="main">
+  <div class="game-grid">
+    <div class="game-tile"><div class="thumb"></div><div class="game-title">Game 1</div></div>
+    <div class="game-tile"><div class="thumb"></div><div class="game-title">Game 2</div></div>
+    <div class="game-tile"><div class="thumb"></div><div class="game-title">Game 3</div></div>
+    <div class="game-tile"><div class="thumb"></div><div class="game-title">Game 4</div></div>
+    <div class="game-tile"><div class="thumb"></div><div class="game-title">Game 5</div></div>
+    <div class="game-tile"><div class="thumb"></div><div class="game-title">Game 6</div></div>
+    <div class="game-tile"><div class="thumb"></div><div class="game-title">Game 7</div></div>
+    <div class="game-tile"><div class="thumb"></div><div class="game-title">Game 8</div></div>
+  </div>
+</div>
+
+<div class="sidebar">
+  <button class="groupchat-btn">+ Create Group Chat</button>
+  <div class="friend-box">Friend 1</div>
+  <div class="friend-box">Friend 2</div>
+  <div class="friend-box">Friend 3</div>
+  <div class="friend-box">Friend 4</div>
+  <div class="friend-box">Friend 5</div>
+</div>
+
+<button class="shop-toggle" onclick="toggleShop()">SHOP</button>
+
+<div id="shopPanel" class="shop-panel">
+  <h2>SHOP</h2>
+
+  <button onclick="buyItem(500); unlockItem('GamePass');">
+    Game Pass – 500 Tickets
+  </button>
+  <button onclick="buyItem(2000); unlockItem('PremiumAvatar');">
+    Premium Avatar – 2000 Tickets
+  </button>
+
+  <h3 style="color:white; margin-top:20px;">Multipliers</h3>
+  <button onclick="buyMultiplier(2, 5000)">x2 Multiplier – 5000 Tickets</button>
+  <button onclick="buyMultiplier(5, 15000)">x5 Multiplier – 15,000 Tickets</button>
+</div>
+
+</body>
+</html>
