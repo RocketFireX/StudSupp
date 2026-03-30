@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<!-- saved from url=(0068)file:///C:/Users/User/Desktop/StudSup/GAEMS/SurviveTheDisasters.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Natural Disaster Survival</title>
+
+<style>
+  body {
+    margin: 0;
+    background: #111;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    color: white;
+  }
+
+  #ui {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+  }
+
+  #game {
+    width: 100vw;
+    height: 100vh;
+    background: #222;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .player {
+    width: 30px;
+    height: 30px;
+    background: #00ff66;
+    position: absolute;
+    left: 200px;
+    top: 200px;
+  }
+
+  .meteor {
+    width: 60px;
+    height: 60px;
+    background: #ff5500;
+    border-radius: 50%;
+    position: absolute;
+  }
+
+  .water {
+    width: 100%;
+    background: #0066ff;
+    position: absolute;
+    bottom: 0;
+  }
+
+  .lightning {
+    width: 6px;
+    background: yellow;
+    position: absolute;
+  }
+</style>
+</head>
+
+<body>
+
+<div id="ui">
+  <div>Health: <span id="healthText">100</span></div>
+  <div>Time: <span id="timeText">6</span>s</div>
+  <div>Disaster: <span id="disasterText">Lightning Storm</span></div>
+  <button id="startBtn">Start Round</button>
+  <div id="message"></div>
+</div>
+
+<div id="game">
+  <div id="player" class="player" style="left: 940px; top: 25px;"></div>
+</div>
+
+<script>
+const game = document.getElementById("game");
+const player = document.getElementById("player");
+const healthText = document.getElementById("healthText");
+const timeText = document.getElementById("timeText");
+const disasterText = document.getElementById("disasterText");
+const message = document.getElementById("message");
+const startBtn = document.getElementById("startBtn");
+
+let health = 100;
+let timeLeft = 30;
+let roundActive = false;
+let keys = {};
+
+function resetPlayer() {
+  player.style.left = "200px";
+  player.style.top = "200px";
+}
+
+function setHealth(val) {
+  health = Math.max(0, Math.min(100, val));
+  healthText.textContent = health;
+  if (health <= 0) endRound(false);
+}
+
+function startRound() {
+  if (roundActive) return;
+  roundActive = true;
+  health = 100;
+  timeLeft = 30;
+  message.textContent = "";
+  healthText.textContent = health;
+  timeText.textContent = timeLeft;
+  resetPlayer();
+  pickDisaster();
+
+  timer = setInterval(() => {
+    if (!roundActive) return;
+    timeLeft--;
+    timeText.textContent = timeLeft;
+    if (timeLeft <= 0) endRound(true);
+  }, 1000);
+}
+
+function endRound(survived) {
+  roundActive = false;
+  clearInterval(timer);
+  clearInterval(meteorLoop);
+  clearInterval(lightningLoop);
+  if (flood) flood.remove();
+  disasterText.textContent = "None";
+  message.textContent = survived ? "You survived!" : "You died!";
+}
+
+function pickDisaster() {
+  const list = ["Meteor Shower", "Flood", "Lightning Storm"];
+  const type = list[Math.floor(Math.random() * list.length)];
+  disasterText.textContent = type;
+
+  if (type === "Meteor Shower") startMeteorShower();
+  if (type === "Flood") startFlood();
+  if (type === "Lightning Storm") startLightningStorm();
+}
+
+function rectHit(a, b) {
+  return !(
+    a.right < b.left ||
+    a.left > b.right ||
+    a.bottom < b.top ||
+    a.top > b.bottom
+  );
+}
+
+// METEORS
+let meteorLoop;
+function startMeteorShower() {
+  meteorLoop = setInterval(() => {
+    if (!roundActive) return;
+
+    const m = document.createElement("div");
+    m.className = "meteor";
+    m.style.left = Math.random() * (game.clientWidth - 60) + "px";
+    m.style.top = "-60px";
+    game.appendChild(m);
+
+    let y = -30;
+    const fall = setInterval(() => {
+      if (!roundActive) { clearInterval(fall); m.remove(); return; }
+      y += 8;
+      m.style.top = y + "px";
+
+      if (rectHit(m.getBoundingClientRect(), player.getBoundingClientRect())) {
+        setHealth(health - 20);
+        m.remove();
+        clearInterval(fall);
+      }
+
+      if (y > game.clientHeight) {
+        m.remove();
+        clearInterval(fall);
+      }
+    }, 40);
+  }, 400);
+}
+
+// FLOOD
+let flood;
+function startFlood() {
+  flood = document.createElement("div");
+  flood.className = "water";
+  flood.style.height = "0px";
+  game.appendChild(flood);
+
+  let h = 0;
+  const rise = setInterval(() => {
+    if (!roundActive) { clearInterval(rise); return; }
+    h += 5;
+    flood.style.height = h + "px";
+
+    const p = player.getBoundingClientRect();
+    const g = game.getBoundingClientRect();
+    const waterTop = g.bottom - h;
+
+    if (p.bottom > waterTop) setHealth(health - 5);
+  }, 200);
+}
+
+// LIGHTNING
+let lightningLoop;
+function startLightningStorm() {
+  lightningLoop = setInterval(() => {
+    if (!roundActive) return;
+
+    const bolt = document.createElement("div");
+    bolt.className = "lightning";
+    bolt.style.left = Math.random() * (game.clientWidth - 6) + "px";
+    bolt.style.top = "0px";
+    bolt.style.height = game.clientHeight + "px";
+    game.appendChild(bolt);
+
+    if (rectHit(bolt.getBoundingClientRect(), player.getBoundingClientRect())) {
+      setHealth(health - 30);
+    }
+
+    setTimeout(() => bolt.remove(), 150);
+  }, 700);
+}
+
+// MOVEMENT
+window.addEventListener("keydown", e => keys[e.key] = true);
+window.addEventListener("keyup", e => keys[e.key] = false);
+
+function move() {
+  if (roundActive) {
+    let x = parseInt(player.style.left) || 0;
+    let y = parseInt(player.style.top) || 0;
+
+    if (keys["ArrowLeft"] || keys["a"]) x -= 5;
+    if (keys["ArrowRight"] || keys["d"]) x += 5;
+    if (keys["ArrowUp"] || keys["w"]) y -= 5;
+    if (keys["ArrowDown"] || keys["s"]) y += 5;
+
+    x = Math.max(0, Math.min(game.clientWidth - 30, x));
+    y = Math.max(0, Math.min(game.clientHeight - 30, y));
+
+    player.style.left = x + "px";
+    player.style.top = y + "px";
+  }
+
+  requestAnimationFrame(move);
+}
+
+startBtn.addEventListener("click", startRound);
+move();
+</script>
+
+
+</body></html>

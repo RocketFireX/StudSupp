@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>StudSup!</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background: #1c163a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Press Start 2P', monospace;
+  color: #ffffff;
+}
+
+.wrap { text-align: center; }
+
+h1 {
+  margin: 0 0 60px 0;
+  font-size: 36px;
+  color: #ff2b2b;
+}
+
+.btn {
+  display: block;
+  width: 340px;
+  padding: 22px 0;
+  margin: 22px auto;
+  background: #222222;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  font-family: 'Michroma', sans-serif; /* UPDATED */
+}
+
+.btn-signup { color: #3b82f6; }
+.btn-login { color: #ef4444; }
+
+.help {
+  margin-top: 40px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.help span {
+  color: #3b82f6;
+  text-decoration: underline;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+  <div class="wrap">
+    <h1>StudSup!</h1>
+
+<button class="btn btn-signup" onclick="window.location.href='SignUp.html'">SignUp</button>
+ <button class="btn btn-login" onclick="window.location.href='login.html'">Login</button>
+    <div class="help">
+      Cant SignUp or Login? Join 
+      <span>
+        <a href="https://discord.gg/sCHaq4fbrb" style="color:#3b82f6; text-decoration:underline;">
+          Discord ServerInvite
+        </a>
+      </span>
+    </div>
+  </div>
+</body>
+</html>
